@@ -7,6 +7,8 @@ import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
+import GetAppIcon from '@material-ui/icons/GetApp'
+import Link from '@material-ui/core/Link'
 
 import axios from 'axios'
 
@@ -14,6 +16,7 @@ import { itemsMap } from '../resources/mediaItems'
 
 // import StagePanel from './StagePanel'
 import UploadMp3 from './UploadMp3'
+import Mp3Card from './Mp3Card'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,10 +31,13 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(5)
   },
   media: {
-    width: '800px',
-    height: '525px',
+    width: '100%',
+    height: '165px',
     // objectFit: 'cover'
     // paddingTop: '56.25%', // 16:9
+  },
+  downloadIcon: {
+    verticalAlign: 'middle'
   },
   title: {
     fontSize: 14
@@ -64,15 +70,6 @@ export default () => {
     }
   }, [mediaItemId, mediaItem.fetched])
 
-  // const files = [
-  //   { kind: 'original', visualLink: '/api/media/123456/original/visual', fileLink: '/api/media/123456/original' },
-  //   { kind: 'pre-edit', visualLink: '/api/media/123456/pre-edit/visual', fileLink: '/api/media/123456/pre-edit' }
-  // ]
-
-  // const original = files.find(file => file.kind === 'original')
-  // const preEdit = files.find(file => file.kind === 'pre-edit')
-  // const final = files.find(file => file.kind === 'final')
-
   return (
     <div className={classes.root}>
       <Card className={classes.card}>
@@ -97,42 +94,26 @@ export default () => {
               </Typography>
               <UploadMp3 mediaItemId={mediaItemId} kind='original' />
             </>}
+          {!mediaItem.failure && mediaItem['original-mono'] &&
+            <>
+              <Typography className={classes.pos} color='textSecondary'>
+                Upload Edited MP3
+              </Typography>
+              <UploadMp3 mediaItemId={mediaItemId} kind='edited' />
+            </>}
         </CardContent>
         <CardActions>
           {/* <UploadMp3 /> */}
         </CardActions>
       </Card>
-      {mediaItem.original &&
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography variant='h5' component='h2'>
-            Original
-          </Typography>
-          <CardMedia
-            className={classes.media}
-            image={`/api/media/content/10003-original.png`}
-            title="Original"
-            src='img'
-          />
-        </CardContent>
-        <CardActions>
-        </CardActions>
-      </Card>}
-      {/* <StagePanel
-        mediaItemId={mediaItemId}
-        kind='original'
-        details={files.find(file => file.kind === 'original')}
-      /> */}
-      {/* <StagePanel
-        mediaItemId={mediaItemId}
-        kind='pre-edit'
-        details={files.find(file => file.kind === 'pre-edit')}
-      />
-      <StagePanel
-        mediaItemId={mediaItemId}
-        kind='compand'
-        details={files.find(file => file.kind === 'compand')}
-      /> */}
+      {mediaItem['edited'] &&
+        <Mp3Card
+          mediaScope={mediaItem['edited']}
+          title='Edited Version' />}
+      {mediaItem['original-mono'] &&
+      <Mp3Card
+        mediaScope={mediaItem['original-mono']}
+        title='Pre-Edit Version' />}
     </div>
   )
 }

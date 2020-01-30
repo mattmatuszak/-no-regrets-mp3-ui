@@ -5,6 +5,8 @@ import Typography from '@material-ui/core/Typography'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { makeStyles } from '@material-ui/core/styles'
 import { useDropzone } from 'react-dropzone'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error'
 
 import axios from 'axios'
 
@@ -48,7 +50,7 @@ const UploadMp3s = ({ mediaItemId, kind }) => {
     const data = new window.FormData()
     data.append('file', acceptedFiles[0])
     data.append('myName', 'test.mp3')
-    axios.post(`/api/media/${mediaItemId}/original`, data, {
+    axios.post(`/api/media/${mediaItemId}/${kind}`, data, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -58,22 +60,10 @@ const UploadMp3s = ({ mediaItemId, kind }) => {
   const { getRootProps, getInputProps } = useDropzone({ onDrop })
 
   if (uploadState.failure) {
-    return (
-      <Card className={classes.cardFailure}>
-        <Typography className={classes.title}>
-          FAILURE!!!
-        </Typography>
-      </Card>
-    )
+    return <ErrorIcon fontSize='large' color='error' />
   }
   if (uploadState.uploaded) {
-    return (
-      <Card className={classes.cardSuccess}>
-        <Typography className={classes.title}>
-          Uploaded!
-        </Typography>
-      </Card>
-    )
+    return <CheckCircleIcon fontSize='large' color='action' />
   }
   if (uploadState.uploading) {
     return (
