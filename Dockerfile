@@ -6,12 +6,13 @@ WORKDIR /app
 
 COPY . ./
 
-RUN yarn install
-RUN yarn build
+RUN npm install
+RUN npm run build
 
 # stage: 2 — the production environment
 FROM nginx:alpine
 COPY --from=react-build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx
 
 # To provide a http authentication comment out the next two lines
 #COPY conf/default.conf /etc/nginx/conf.d/default.conf
