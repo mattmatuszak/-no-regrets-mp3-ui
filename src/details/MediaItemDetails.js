@@ -107,6 +107,10 @@ export default () => {
         <Mp3Card
           mediaScope={mediaItem['edited']}
           title='Edited Version' />}
+      {mediaItem['original-mono-companded'] &&
+        <Mp3Card
+        mediaScope={mediaItem['original-mono-companded']}
+          title='Pre-Edit Companded Version' />}
       {mediaItem['original-mono'] &&
       <Mp3Card
         mediaScope={mediaItem['original-mono']}

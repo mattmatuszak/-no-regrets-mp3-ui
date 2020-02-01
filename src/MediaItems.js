@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -8,9 +8,10 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 
+import axios from 'axios'
+
 import mediaItems from './resources/mediaItems'
 
-// import Link from '../src/Link'
 import { Link } from 'react-router-dom'
 
 import { GlobalStateContext } from '../src/GlobalStateContext'
@@ -18,6 +19,18 @@ import { GlobalStateContext } from '../src/GlobalStateContext'
 const useStyles = makeStyles({
   table: {
     minWidth: 650
+  },
+  notReady: {
+
+  },
+  readyForEdit: {
+    backgroundColor: '#fff59d'
+  },
+  readyForUpload: {
+    backgroundColor: '#ffe082'
+  },
+  working: {
+    backgroundColor: '#eeeeee'
   }
 })
 
@@ -33,6 +46,28 @@ const MediaItems = () => {
   const classes = useStyles()
   const { search } = useContext(GlobalStateContext)
 
+  const [mediaItemState, updateMediaItemState] = useState({ fetched: false, mediaItems: [] })
+
+  useEffect(() => {
+    if (!mediaItemState.fetched) {
+      axios.get(`/api/media`)
+        .then(mediaItemResult => mediaItemResult.data)
+        .then(mediaItems => updateMediaItemState({ ...mediaItemState, mediaItems, fetched: true, failure: false }))
+        .catch(err => {
+          if (err.response.status === 404) {
+            updateMediaItemState({ fetched: true })
+          } else {
+            console.log(err)
+            updateMediaItemState({ fetched: true, failure: true })
+          }
+        })
+    }
+  }, [mediaItemState])
+
+  // TODO: hide upload when edited version exists
+  // TODO: add update to mark uploaded
+  // TODO: Modify all downloads of mp3s to be <<name>>-<<talk>>
+
   return (
     <TableContainer component={Paper}>
       <Table classtitle={classes.table} aria-label='Media Item Table' size='small'>
@@ -40,13 +75,22 @@ const MediaItems = () => {
           <TableRow component='tr'>
             <TableCell component='th'>Speaker</TableCell>
             <TableCell component='th'>Talk</TableCell>
+            <TableCell component='th'>Status</TableCell>
             <TableCell component='th'>Campus</TableCell>
             <TableCell component='th'>Time</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {(mediaItems || []).filter(mediaItemFilterImpl(search.term)).map(mediaItem => (
-            <TableRow key={mediaItem.id} component='tr'>
+          {(mediaItems || []).filter(mediaItemFilterImpl(search.term)).map(mediaItem => {
+            const mediaItemFromState = mediaItemState.mediaItems.find(item => mediaItem.id === Number(item.id)) || { status: 'Waiting for Upload' }
+            let rowStyle = classes.notReady
+            if (mediaItemFromState.status === 'Ready for Edit\n') {
+              rowStyle = classes.readyForEdit
+            } else if (mediaItemFromState.status.indexOf('Subsplash') >= 0) {
+              rowStyle = classes.readyForUpload
+            }
+            return (
+            <TableRow key={mediaItem.id} component='tr' className={rowStyle}>
               <TableCell component='td'>
                 {mediaItem.speaker}
               </TableCell>
@@ -55,10 +99,11 @@ const MediaItems = () => {
                   {mediaItem.talk}
                 </Link>
               </TableCell>
+              <TableCell component='td'>{mediaItemFromState.status}</TableCell>
               <TableCell component='td'>{mediaItem.subtitle}</TableCell>
               <TableCell component='td'>{mediaItem.time}</TableCell>
             </TableRow>
-          ))}
+          )})}
         </TableBody>
       </Table>
     </TableContainer>
