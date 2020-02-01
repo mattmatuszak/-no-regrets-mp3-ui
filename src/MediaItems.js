@@ -29,6 +29,9 @@ const useStyles = makeStyles({
   readyForUpload: {
     backgroundColor: '#ffe082'
   },
+  uploadedToSubsplash: {
+    backgroundColor: '#c5e1a5'
+  },
   working: {
     backgroundColor: '#eeeeee'
   }
@@ -40,6 +43,18 @@ const mediaItemFilterImpl = searchTerm => item => {
     Number(term) === item.id ||
     item.title.toUpperCase().indexOf(term) >= 0 ||
     item.subtitle.toUpperCase().indexOf(term) >= 0
+}
+
+const sortImpl = (first, second) => {
+  console.log(`am I sorting?`)
+  const firstStatus = first.status || 'z'
+  const secondStatus = second.status || 'z'
+  console.log(first, second)
+  if (firstStatus < secondStatus)
+    return -1;
+  if (firstStatus > secondStatus)
+    return 1;
+  return 0;
 }
 
 const MediaItems = () => {
@@ -82,10 +97,14 @@ const MediaItems = () => {
             let rowStyle = classes.notReady
             if (mediaItemFromState.status === 'Ready for Edit\n') {
               rowStyle = classes.readyForEdit
+            } else if (mediaItemFromState.status.indexOf('Uploaded to Subsplash') >= 0) {
+              rowStyle = classes.uploadedToSubsplash
             } else if (mediaItemFromState.status.indexOf('Subsplash') >= 0) {
               rowStyle = classes.readyForUpload
             }
-            return (
+            return {
+              status: mediaItemFromState.status,
+              row: (
             <TableRow key={mediaItem.id} component='tr' className={rowStyle}>
               <TableCell component='td'>
                 {mediaItem.speaker}
@@ -99,7 +118,8 @@ const MediaItems = () => {
               <TableCell component='td'>{mediaItem.subtitle}</TableCell>
               <TableCell component='td'>{mediaItem.time}</TableCell>
             </TableRow>
-          )})}
+            )}
+          }).sort(sortImpl).map(item => item.row)}
         </TableBody>
       </Table>
     </TableContainer>
