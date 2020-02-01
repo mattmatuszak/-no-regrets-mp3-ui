@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const Mp3Card = ({ mediaScope, title }) => {
+const Mp3Card = ({ mediaScope, title, fileName }) => {
   const classes = useStyles()
 
   const mp3URL = `/api/media/content/${mediaScope.find(file => file.indexOf('mp3') > 0)}`
@@ -66,7 +66,7 @@ const Mp3Card = ({ mediaScope, title }) => {
                   const url = window.URL.createObjectURL(new Blob([response.data]));
                   const link = document.createElement('a');
                   link.href = url;
-                  link.setAttribute('download', mp3FileName);
+                  link.setAttribute('download', `${fileName}.mp3`);
                   document.body.appendChild(link);
                   link.click();
                 });

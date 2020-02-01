@@ -64,10 +64,6 @@ const MediaItems = () => {
     }
   }, [mediaItemState])
 
-  // TODO: hide upload when edited version exists
-  // TODO: add update to mark uploaded
-  // TODO: Modify all downloads of mp3s to be <<name>>-<<talk>>
-
   return (
     <TableContainer component={Paper}>
       <Table classtitle={classes.table} aria-label='Media Item Table' size='small'>
