@@ -34,6 +34,9 @@ const useStyles = makeStyles({
   },
   working: {
     backgroundColor: '#eeeeee'
+  },
+  forget: {
+    backgroundColor: '#ef9a9a'
   }
 })
 
@@ -101,6 +104,8 @@ const MediaItems = () => {
               rowStyle = classes.uploadedToSubsplash
             } else if (mediaItemFromState.status.indexOf('Subsplash') >= 0) {
               rowStyle = classes.readyForUpload
+            } else if (mediaItemFromState.status.indexOf('zzForget') >= 0) {
+              rowStyle = classes.forget
             }
             return {
               status: mediaItemFromState.status,
